@@ -11,7 +11,7 @@
         </div>
     </x-slot>
 
-    <div class="w-full space-y-8">
+    <div class="w-full space-y-8 px-4 py-5 md:px-6 md:py-6">
         <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div class="text-xs font-semibold uppercase tracking-wide text-slate-500">{{ $adminOverview ? __('Total listings') : __('My listings') }}</div>

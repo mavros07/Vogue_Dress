@@ -68,11 +68,11 @@
   @endif
 </head>
 <body
-  class="admin-luxe-root font-body-md text-on-background antialiased h-full overflow-hidden"
+  class="admin-luxe-root font-body-md text-on-background antialiased"
   x-data="{ drawerOpen: false }"
   @keydown.escape.window="drawerOpen = false"
 >
-  <div class="flex h-screen w-full overflow-hidden relative">
+  <div class="admin-shell relative">
     <div
       class="fixed inset-0 z-40 bg-black/50 lg:hidden"
       x-show="drawerOpen"
@@ -83,7 +83,7 @@
     ></div>
 
     {{-- Desktop sidebar (dark, WordPress-admin-style) --}}
-    <aside class="admin-sidebar hidden lg:flex flex-col h-screen w-60 shrink-0 z-50">
+    <aside class="admin-sidebar admin-sidebar-desktop hidden lg:flex flex-col w-60 shrink-0 z-50">
       <div class="px-5 py-5 shrink-0 border-b border-black/30">
         <a href="{{ route($dashboardHomeRoute) }}" class="block sidebar-brand">
           <h1 class="text-base font-semibold tracking-tight">{{ $brandName }}</h1>
@@ -222,7 +222,7 @@
       </div>
     </aside>
 
-    <main class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-wp-bg relative z-10">
+    <main class="admin-main bg-wp-bg relative z-10">
       <header class="lg:hidden flex justify-between items-center px-4 py-3 border-b border-wp-border bg-white shrink-0 z-40">
         <h1 class="text-sm font-semibold text-wp-text">{{ $brandName }} <span class="text-wp-text-muted font-normal">· {{ __('Admin') }}</span></h1>
         <button type="button" class="text-wp-text p-1.5" @click="drawerOpen = true" aria-label="{{ __('Menu') }}">
@@ -230,13 +230,13 @@
         </button>
       </header>
 
-      <div class="flex-1 min-h-0 overflow-hidden flex flex-col">
+      <div class="admin-main-body">
         @if (isset($header) && ! $isFullBleed)
-          <div class="shrink-0 border-b border-wp-border bg-white px-4 md:px-6 py-3">
+          <div class="admin-main-header shrink-0 border-b border-wp-border bg-white px-4 md:px-6 py-3">
             <div class="max-w-max-container mx-auto w-full">{{ $header }}</div>
           </div>
         @endif
-        <div class="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
+        <div class="admin-main-scroll custom-scrollbar">
           @if ($isFullBleed)
             {{ $slot }}
           @else

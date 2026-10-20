@@ -114,11 +114,61 @@
   .material-symbols-outlined { display: none !important; }
   .admin-luxe-root .material-symbols-outlined { display: none !important; }
 
+  html:has(.admin-luxe-root),
+  .admin-luxe-root {
+    height: 100%;
+  }
+
   .admin-luxe-root {
     background-color: #f0f0f1;
     font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     color: #1d2327;
     -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  /* Shell layout is defined here so the dashboard still scrolls if the Tailwind CDN
+     is blocked or its utility classes do not apply. */
+  .admin-shell {
+    display: flex;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
+    width: 100%;
+    overflow: hidden;
+  }
+  .admin-sidebar-desktop {
+    height: 100%;
+    min-height: 0;
+  }
+  @media (min-width: 1024px) {
+    .admin-sidebar-desktop { display: flex !important; }
+  }
+  @media (max-width: 1023.98px) {
+    .admin-sidebar-desktop { display: none !important; }
+  }
+  .admin-main {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+  .admin-main-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .admin-main-header { flex: 0 0 auto; }
+  .admin-main-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   /* Neutralize the fashion-magazine typography that the existing admin views still use. */

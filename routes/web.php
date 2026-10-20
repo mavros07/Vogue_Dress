@@ -109,14 +109,7 @@ Route::get('/dashboard', function (Request $request) {
     $user = $request->user();
 
     if ($user->isAdmin()) {
-        return view('dashboard', [
-            'stats' => [
-                'total' => Vehicle::query()->count(),
-                'pending' => Vehicle::query()->where('status', 'pending')->count(),
-                'approved' => Vehicle::query()->where('status', 'approved')->count(),
-            ],
-            'adminOverview' => true,
-        ]);
+        return redirect()->route('admin.dashboard');
     }
 
     return view('dashboard', [

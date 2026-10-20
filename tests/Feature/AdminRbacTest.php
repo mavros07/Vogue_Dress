@@ -8,6 +8,8 @@ use Database\Seeders\PermissionsSeeder;
 use Database\Seeders\RolesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
 
 class AdminRbacTest extends TestCase
@@ -152,6 +154,27 @@ class AdminRbacTest extends TestCase
             ->whereNull('meta->action')
             ->count();
         $this->assertSame(0, $genericDuplicates);
+    }
+
+    public function test_admin_without_synced_permissions_still_sees_the_admin_menu(): void
+    {
+        $admin = $this->makeAdmin();
+        Role::findByName('admin')->syncPermissions([]);
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+        $response = $this->actingAs($admin->fresh())->get(route('admin.dashboard'));
+
+        $response->assertOk();
+        $response->assertSee(__('Products'));
+        $response->assertSee(__('Orders'));
+        $response->assertSee(__('Settings'));
+    }
+
+    public function test_admin_dashboard_url_opens_the_admin_overview(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $this->actingAs($admin)->get(route('dashboard'))->assertRedirect(route('admin.dashboard'));
     }
 
     public function test_super_admin_can_be_updated_without_submitting_role_field(): void
