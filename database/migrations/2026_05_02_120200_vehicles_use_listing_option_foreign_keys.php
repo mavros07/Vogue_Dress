@@ -81,31 +81,43 @@ return new class extends Migration
         DB::table('vehicles')->orderBy('id')->chunkById(200, function ($rows) {
             foreach ($rows as $row) {
                 $fk = ListingOptionCatalogSync::resolveLegacyRowToForeignKeys($row);
+                // The apparel app no longer maps legacy car fields. An empty array
+                // becomes "UPDATE vehicles SET WHERE id = ?" which MariaDB rejects.
+                if ($fk === []) {
+                    continue;
+                }
                 DB::table('vehicles')->where('id', $row->id)->update($fk);
             }
         });
 
-        // SQLite keeps standalone indexes on dropped columns; drop them first or ALTER fails.
-        if (DB::getDriverName() === 'sqlite') {
-            foreach (['vehicles_condition_index', 'vehicles_location_index'] as $indexName) {
-                DB::statement('DROP INDEX IF EXISTS '.$indexName);
-            }
+        // Standalone indexes on columns we are about to drop. SQLite and MariaDB
+        // both refuse the ALTER while those indexes still exist.
+        foreach (['vehicles_condition_index', 'vehicles_location_index'] as $indexName) {
+            $this->dropIndexIfExists($indexName);
         }
 
-        Schema::table('vehicles', function (Blueprint $table) {
-            $table->dropColumn([
-                'make',
-                'model',
-                'condition',
-                'body_type',
-                'transmission',
-                'fuel_type',
-                'drive',
-                'country',
-                'location',
-                'contact_address',
-            ]);
-        });
+        $legacyColumns = [
+            'make',
+            'model',
+            'condition',
+            'body_type',
+            'transmission',
+            'fuel_type',
+            'drive',
+            'country',
+            'location',
+            'contact_address',
+        ];
+        $existingLegacyColumns = array_values(array_filter(
+            $legacyColumns,
+            fn (string $column) => Schema::hasColumn('vehicles', $column)
+        ));
+
+        if ($existingLegacyColumns !== []) {
+            Schema::table('vehicles', function (Blueprint $table) use ($existingLegacyColumns) {
+                $table->dropColumn($existingLegacyColumns);
+            });
+        }
     }
 
     public function down(): void
@@ -266,6 +278,34 @@ return new class extends Migration
         }
 
         $table->index($columnName);
+    }
+
+    private function dropIndexIfExists(string $indexName): void
+    {
+        $driver = DB::getDriverName();
+
+        try {
+            if ($driver === 'sqlite') {
+                DB::statement('DROP INDEX IF EXISTS '.$indexName);
+
+                return;
+            }
+
+            if (! in_array($driver, ['mysql', 'mariadb'], true)) {
+                return;
+            }
+
+            $rows = DB::select(
+                'SELECT COUNT(*) AS c FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = ? AND index_name = ?',
+                ['vehicles', $indexName]
+            );
+
+            if ((int) ($rows[0]->c ?? 0) > 0) {
+                DB::statement('ALTER TABLE `vehicles` DROP INDEX `'.$indexName.'`');
+            }
+        } catch (Throwable) {
+            // Dropping the column below also removes a single-column index.
+        }
     }
 
     /**
