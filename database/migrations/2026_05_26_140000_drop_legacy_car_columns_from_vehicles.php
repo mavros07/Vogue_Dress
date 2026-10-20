@@ -86,8 +86,9 @@ return new class extends Migration
         }
 
         if (Schema::hasColumn('vehicles', 'type_listing_option_id')) {
+            $this->dropForeignIfExists('vehicles', 'type_listing_option_id');
             Schema::table('vehicles', function (Blueprint $table) {
-                $table->dropConstrainedForeignId('type_listing_option_id');
+                $table->dropColumn('type_listing_option_id');
             });
         }
     }
@@ -133,6 +134,31 @@ return new class extends Migration
             'vehicles_drive_listing_option_id_index',
             'vehicles_country_listing_option_id_index',
         ];
+    }
+
+    private function dropForeignIfExists(string $table, string $column): void
+    {
+        if (! in_array(DB::getDriverName(), ['mysql', 'mariadb'], true)) {
+            return;
+        }
+
+        $constraints = DB::select(
+            'SELECT CONSTRAINT_NAME AS name
+             FROM information_schema.KEY_COLUMN_USAGE
+             WHERE TABLE_SCHEMA = DATABASE()
+               AND TABLE_NAME = ?
+               AND COLUMN_NAME = ?
+               AND REFERENCED_TABLE_NAME IS NOT NULL',
+            [$table, $column]
+        );
+
+        foreach ($constraints as $constraint) {
+            $name = (string) ($constraint->name ?? '');
+            if ($name === '') {
+                continue;
+            }
+            DB::statement('ALTER TABLE `'.$table.'` DROP FOREIGN KEY `'.$name.'`');
+        }
     }
 
     private function dropIndexIfExists(string $indexName): void

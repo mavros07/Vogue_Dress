@@ -13,6 +13,11 @@ return new class extends Migration
             return;
         }
 
+        // The published SQL import created these as MyISAM. InnoDB is required
+        // before any foreign key can reference listing_options (errno 150).
+        $this->ensureInnoDb('listing_option_categories');
+        $this->ensureInnoDb('listing_options');
+
         $now = now();
         $exists = DB::table('listing_option_categories')->where('slug', 'vehicle_origin_type')->exists();
         if (! $exists) {
@@ -53,15 +58,15 @@ return new class extends Migration
             return;
         }
 
-        Schema::table('vehicles', function (Blueprint $table) {
-            if (! Schema::hasColumn('vehicles', 'type_listing_option_id')) {
-                $table->foreignId('type_listing_option_id')
-                    ->nullable()
-                    ->after('country_listing_option_id')
-                    ->constrained('listing_options')
-                    ->nullOnDelete();
-            }
-        });
+        if (! Schema::hasColumn('vehicles', 'type_listing_option_id')) {
+            Schema::table('vehicles', function (Blueprint $table) {
+                $column = $table->foreignId('type_listing_option_id')->nullable();
+                if (Schema::hasColumn('vehicles', 'country_listing_option_id')) {
+                    $column->after('country_listing_option_id');
+                }
+                $column->constrained('listing_options')->nullOnDelete();
+            });
+        }
 
         $nigerianId = (int) DB::table('listing_options')
             ->where('category_id', $catId)
@@ -101,8 +106,9 @@ return new class extends Migration
     public function down(): void
     {
         if (Schema::hasTable('vehicles') && Schema::hasColumn('vehicles', 'type_listing_option_id')) {
+            $this->dropForeignIfExists('vehicles', 'type_listing_option_id');
             Schema::table('vehicles', function (Blueprint $table) {
-                $table->dropConstrainedForeignId('type_listing_option_id');
+                $table->dropColumn('type_listing_option_id');
             });
         }
 
@@ -114,6 +120,40 @@ return new class extends Migration
         if ($catId > 0) {
             DB::table('listing_options')->where('category_id', $catId)->delete();
             DB::table('listing_option_categories')->where('id', $catId)->delete();
+        }
+    }
+
+    private function ensureInnoDb(string $table): void
+    {
+        if (! in_array(DB::getDriverName(), ['mysql', 'mariadb'], true)) {
+            return;
+        }
+
+        DB::statement('ALTER TABLE `'.$table.'` ENGINE=InnoDB');
+    }
+
+    private function dropForeignIfExists(string $table, string $column): void
+    {
+        if (! in_array(DB::getDriverName(), ['mysql', 'mariadb'], true)) {
+            return;
+        }
+
+        $constraints = DB::select(
+            'SELECT CONSTRAINT_NAME AS name
+             FROM information_schema.KEY_COLUMN_USAGE
+             WHERE TABLE_SCHEMA = DATABASE()
+               AND TABLE_NAME = ?
+               AND COLUMN_NAME = ?
+               AND REFERENCED_TABLE_NAME IS NOT NULL',
+            [$table, $column]
+        );
+
+        foreach ($constraints as $constraint) {
+            $name = (string) ($constraint->name ?? '');
+            if ($name === '') {
+                continue;
+            }
+            DB::statement('ALTER TABLE `'.$table.'` DROP FOREIGN KEY `'.$name.'`');
         }
     }
 };
