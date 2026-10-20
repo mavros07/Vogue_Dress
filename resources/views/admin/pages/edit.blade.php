@@ -482,21 +482,21 @@
 @endphp
 
 <x-app-layout>
-  <div class="flex flex-col">
-    <x-admin.page-header :title="__('Edit page')" :subtitle="$pageInfo['label'] ?? null" />
+  <x-admin.page-header :title="__('Edit page')" :subtitle="$pageInfo['label'] ?? null">
+    <x-slot name="actions">
+      <x-admin.button variant="secondary" :href="route('admin.pages.index')">{{ __('All pages') }}</x-admin.button>
+    </x-slot>
+  </x-admin.page-header>
 
-    <x-admin.page-content>
-      <div class="mb-4 flex justify-end">
-        <a href="{{ route('admin.pages.index') }}" class="admin-luxe-btn-secondary">{{ __('All pages') }}</a>
-      </div>
+  <x-admin.page-content class="pb-8">
     @if (session('status'))
-      <div class="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800 shadow-sm">
+      <div class="rounded border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
         {{ session('status') }}
       </div>
     @endif
 
     @if ($errors->any())
-      <div class="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 shadow-sm">
+      <div class="rounded border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
         <ul class="list-disc space-y-1 pl-5">
           @foreach ($errors->all() as $error)
             <li>{{ $error }}</li>
@@ -505,59 +505,47 @@
       </div>
     @endif
 
-    <form method="post" action="{{ route('admin.pages.update', ['slug' => $slug]) }}" class="space-y-6">
+    <form method="post" action="{{ route('admin.pages.update', ['slug' => $slug]) }}" class="space-y-4">
       @csrf
       @method('PUT')
 
-      <div class="space-y-6">
-        <div class="space-y-6">
-          <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-            <div class="border-b border-gray-100 bg-gray-50/80 px-5 py-4">
-              <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-500">{{ __('Page & SEO') }}</h3>
-              <p class="mt-1 text-sm text-gray-600">{{ __('Title and description used in the browser tab and search snippets.') }}</p>
-            </div>
-            <div class="space-y-5 p-5">
-              <div>
-                <x-input-label for="page_title" value="{{ __('Page title') }}" />
-                <x-text-input
-                  id="page_title"
-                  name="title"
-                  type="text"
-                  class="mt-1 block w-full"
-                  value="{{ old('title', $page->title) }}"
-                  required
-                />
-              </div>
-              <div>
-                <x-input-label for="meta_description" value="{{ __('Meta description') }}" />
-                <textarea
-                  id="meta_description"
-                  name="meta_description"
-                  rows="3"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                >{{ old('meta_description', $page->meta_description) }}</textarea>
-                <p class="mt-1.5 text-xs text-gray-500">{{ __('Optional. Roughly one or two sentences.') }}</p>
-              </div>
-            </div>
-          </div>
-
+      <section class="overflow-hidden rounded border border-wp-border bg-white">
+        <div class="border-b border-wp-border bg-wp-bg px-4 py-3">
+          <h3 class="text-sm font-semibold text-wp-text">{{ __('Page & SEO') }}</h3>
+          <p class="mt-0.5 text-xs text-wp-text-muted">{{ __('Title and description used in the browser tab and search snippets.') }}</p>
         </div>
-      </div>
+        <div class="space-y-4 p-4">
+          <div>
+            <x-input-label for="page_title" value="{{ __('Page title') }}" />
+            <x-text-input
+              id="page_title"
+              name="title"
+              type="text"
+              class="mt-1 block w-full"
+              value="{{ old('title', $page->title) }}"
+              required
+            />
+          </div>
+          <div>
+            <x-input-label for="meta_description" value="{{ __('Meta description') }}" />
+            <textarea
+              id="meta_description"
+              name="meta_description"
+              rows="3"
+              class="mt-1 block w-full"
+            >{{ old('meta_description', $page->meta_description) }}</textarea>
+            <p class="mt-1 text-xs text-wp-text-muted">{{ __('Optional. Roughly one or two sentences.') }}</p>
+          </div>
+        </div>
+      </section>
 
       @if (count($pageInfo['fields']) > 0)
-        <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-          <div class="border-b border-gray-100 bg-gray-50/80 px-5 py-4">
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-500">{{ __('Section content') }}</h3>
-            <p class="mt-1 text-sm text-gray-600">
-              {{ __('Copy and images for page sections. Lists and cards that pull from inventory stay dynamic.') }}
-            </p>
-          </div>
-          <div class="space-y-8 bg-slate-50/60 p-5">
-            @foreach ($sectionFieldGroups as $groupTitle => $fieldsInGroup)
-              <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-                <h4 class="border-b border-gray-100 pb-3 text-sm font-semibold text-gray-900">{{ $groupTitle }}</h4>
-                {{-- Short text fields share a row on md+ (cf. form-row); images span full width with select → dashed preview → optional path --}}
-                <div class="mt-5 grid gap-6 md:grid-cols-2">
+        @foreach ($sectionFieldGroups as $groupTitle => $fieldsInGroup)
+          <section class="overflow-hidden rounded border border-wp-border bg-white">
+            <div class="border-b border-wp-border bg-wp-bg px-4 py-3">
+              <h3 class="text-sm font-semibold text-wp-text">{{ $groupTitle }}</h3>
+            </div>
+            <div class="grid gap-4 p-4 md:grid-cols-2">
                   @foreach ($fieldsInGroup as $field)
                     @php
                       $value = old('sections.'.$field['name'], $sectionValues[$field['name']] ?? $field['default']);
@@ -567,20 +555,21 @@
                       @php
                         $isThumbPreview = ($field['preview'] ?? '') === 'thumbnail';
                       @endphp
-                      <div class="js-media-field rounded-lg border border-gray-100 bg-slate-50/40 p-4 {{ $isThumbPreview ? 'md:col-span-1' : 'md:col-span-2' }}">
-                        <span class="block text-sm font-semibold text-gray-800">{{ $field['label'] }}</span>
-                        
-                        <div class="mt-3 flex flex-wrap items-center gap-2">
-                          <button
-                            type="button"
-                            class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 js-media-picker"
-                            data-media-target="{{ $inputId }}"
-                          >{{ __('Select') }}</button>
-                          <button
-                            type="button"
-                            class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 shadow-sm hover:bg-gray-50 js-media-clear"
-                            data-clear-target="{{ $inputId }}"
-                          >{{ __('Clear') }}</button>
+                      <div class="js-media-field {{ $isThumbPreview ? 'md:col-span-1' : 'md:col-span-2' }}">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                          <span class="text-sm font-medium text-wp-text">{{ $field['label'] }}</span>
+                          <div class="flex items-center gap-2">
+                            <button
+                              type="button"
+                              class="admin-luxe-btn-secondary js-media-picker"
+                              data-media-target="{{ $inputId }}"
+                            >{{ __('Select') }}</button>
+                            <button
+                              type="button"
+                              class="admin-luxe-btn-secondary js-media-clear"
+                              data-clear-target="{{ $inputId }}"
+                            >{{ __('Clear') }}</button>
+                          </div>
                         </div>
 
                         <input
@@ -593,7 +582,7 @@
                         />
 
                         <div
-                          class="mt-3 overflow-hidden rounded-md border border-dashed border-gray-300 bg-white shadow-inner"
+                          class="mt-3 overflow-hidden rounded border border-dashed border-wp-border bg-wp-bg"
                           data-media-preview-wrap="{{ $inputId }}"
                         >
                           <div class="relative flex items-center justify-center {{ $isThumbPreview ? 'h-32' : 'min-h-[10rem] max-h-[20rem]' }} w-full bg-gray-50">
@@ -634,10 +623,10 @@
                         </details>
                       </div>
                      @elseif ($field['type'] === 'repeater')
-                      <div class="md:col-span-2 js-repeater-field bg-slate-50 p-6 rounded-xl border border-gray-200" data-field-name="{{ $field['name'] }}" data-schema='@json($field['schema'])'>
-                        <div class="flex items-center justify-between mb-4">
-                          <span class="block text-sm font-bold text-slate-800 uppercase tracking-tight">{{ $field['label'] }}</span>
-                          <button type="button" class="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-indigo-700 js-repeater-add">
+                      <div class="js-repeater-field rounded border border-wp-border bg-wp-bg p-4 md:col-span-2" data-field-name="{{ $field['name'] }}" data-schema='@json($field['schema'])'>
+                        <div class="mb-3 flex items-center justify-between gap-3">
+                          <span class="text-sm font-medium text-wp-text">{{ $field['label'] }}</span>
+                          <button type="button" class="admin-luxe-btn-primary js-repeater-add">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                             {{ __('Add item') }}
                           </button>
@@ -650,8 +639,8 @@
                         </div>
 
                         <template class="js-repeater-item-template">
-                          <div class="relative bg-white p-5 rounded-lg border border-gray-200 shadow-sm group js-repeater-item">
-                            <button type="button" class="absolute top-4 right-4 text-slate-400 hover:text-red-600 transition-colors js-repeater-remove" title="Remove">
+                          <div class="js-repeater-item group relative rounded border border-wp-border bg-white p-4">
+                            <button type="button" class="js-repeater-remove absolute right-3 top-3 text-wp-text-muted hover:text-rose-600" title="Remove">
                               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                             </button>
                             <div class="grid grid-cols-1 gap-4 pr-10">
@@ -670,19 +659,19 @@
                         </template>
                       </div>
                     @elseif ($field['type'] === 'gallery')
-                      <div class="js-media-field rounded-lg border border-gray-100 bg-slate-50/40 p-4 md:col-span-2">
-                        <div class="flex items-center justify-between gap-4">
-                          <span class="block text-sm font-semibold text-gray-800">{{ $field['label'] }}</span>
+                      <div class="js-media-field md:col-span-2">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                          <span class="text-sm font-medium text-wp-text">{{ $field['label'] }}</span>
                           <div class="flex items-center gap-2">
                             <button
                               type="button"
-                              class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 js-media-picker"
+                              class="admin-luxe-btn-secondary js-media-picker"
                               data-media-target="{{ $inputId }}"
                               data-media-multi="1"
                             >{{ __('Select images') }}</button>
                             <button
                               type="button"
-                              class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 shadow-sm hover:bg-gray-50 js-media-clear"
+                              class="admin-luxe-btn-secondary js-media-clear"
                               data-clear-target="{{ $inputId }}"
                             >{{ __('Clear all') }}</button>
                           </div>
@@ -725,59 +714,54 @@
                       </div>
                     @endif
                   @endforeach
-                </div>
-              </div>
-            @endforeach
-          </div>
-        </div>
+            </div>
+          </section>
+        @endforeach
       @endif
 
       @unless(in_array($slug, ['about', 'listing-detail'], true))
-        <details class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-          <summary class="cursor-pointer select-none border-b border-gray-100 bg-gray-50/80 px-5 py-4">
+        <details class="overflow-hidden rounded border border-wp-border bg-white">
+          <summary class="cursor-pointer select-none border-b border-wp-border bg-wp-bg px-4 py-3">
             <div class="flex items-center justify-between gap-4">
               <div>
-                <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-500">{{ __('Advanced: Custom HTML') }}</h3>
-                <p class="mt-1 text-sm text-gray-600">{{ __('Optional extra markup for this page template. Prefer section fields above when possible.') }}</p>
+                <h3 class="text-sm font-semibold text-wp-text">{{ __('Advanced: Custom HTML') }}</h3>
+                <p class="mt-0.5 text-xs text-wp-text-muted">{{ __('Optional extra markup for this page template. Prefer section fields above when possible.') }}</p>
               </div>
-              <span class="text-xs font-semibold text-gray-500">{{ __('Toggle') }}</span>
+              <span class="text-xs text-wp-text-muted">{{ __('Toggle') }}</span>
             </div>
           </summary>
-          <div class="p-5">
+          <div class="p-4">
             <x-input-label for="content_html" value="{{ __('Content HTML') }}" />
             <textarea
               id="content_html"
               name="content_html"
               rows="12"
-              class="mt-1 block w-full rounded-md border-gray-300 font-mono text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              class="mt-1 block w-full font-mono text-sm"
             >{{ old('content_html', $page->content_html) }}</textarea>
           </div>
         </details>
       @endunless
 
-      <div class="sticky bottom-4 z-20 rounded-xl border border-gray-200 bg-white/95 p-4 shadow-lg backdrop-blur sm:flex sm:items-center sm:justify-between">
+      <div class="flex flex-col gap-3 rounded border border-wp-border bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <label class="flex cursor-pointer items-start gap-3">
           <input type="hidden" name="is_active" value="0" />
           <input
             type="checkbox"
             name="is_active"
             value="1"
-            class="mt-0.5 rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+            class="mt-0.5 rounded border-wp-border text-wp-link focus:ring-wp-link"
             {{ old('is_active', (int) $page->is_active) ? 'checked' : '' }}
           />
           <span>
-            <span class="block text-sm font-medium text-gray-900">{{ __('Page is active') }}</span>
-            <span class="mt-0.5 block text-xs text-gray-500">{{ __('Inactive pages return 404 on the public site.') }}</span>
+            <span class="block text-sm font-medium text-wp-text">{{ __('Page is active') }}</span>
+            <span class="mt-0.5 block text-xs text-wp-text-muted">{{ __('Inactive pages return 404 on the public site.') }}</span>
           </span>
         </label>
-        <div class="mt-3 flex items-center justify-end gap-3 sm:mt-0">
-          <a href="{{ route('admin.pages.index') }}" class="inline-flex items-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('All pages') }}</a>
-          <button type="submit" class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-            {{ __('Save page') }}
-          </button>
+        <div class="flex items-center justify-end gap-2">
+          <x-admin.button variant="secondary" :href="route('admin.pages.index')">{{ __('All pages') }}</x-admin.button>
+          <button type="submit" class="admin-luxe-btn-primary">{{ __('Save page') }}</button>
         </div>
       </div>
     </form>
-    </x-admin.page-content>
-  </div>
+  </x-admin.page-content>
 </x-app-layout>

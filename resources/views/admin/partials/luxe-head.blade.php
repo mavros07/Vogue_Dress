@@ -220,12 +220,11 @@
   .custom-scrollbar::-webkit-scrollbar-thumb { background: #c3c4c7; border-radius: 3px; }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #8c8f94; }
 
-  /* Cards: WooCommerce-style white card with light border, no fashion shadows. */
+  /* Keep white surfaces flat. Do not force radius or border on every bg-white
+     node — that collapses nested page-editor cards into one cramped box. */
   .admin-luxe-root .bg-surface-container-lowest,
   .admin-luxe-root .bg-white {
     background: #ffffff !important;
-    border-color: #dcdcde !important;
-    border-radius: 4px !important;
     box-shadow: none !important;
   }
   .admin-luxe-root .border-outline-variant { border-color: #dcdcde !important; }
@@ -284,8 +283,28 @@
     background: #135e96; border-color: #135e96; opacity: 1; transform: none !important;
   }
 
+  .admin-luxe-btn-secondary,
+  .admin-luxe-root .admin-luxe-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: #fff;
+    color: #1d2327 !important;
+    padding: 0.5rem 0.875rem;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid #c3c4c7;
+    border-radius: 3px;
+  }
+  .admin-luxe-btn-secondary:hover,
+  .admin-luxe-root .admin-luxe-btn-secondary:hover {
+    background: #f6f7f7;
+    border-color: #8c8f94;
+  }
+
   /* Secondary outline buttons */
-  .admin-luxe-root button[type="button"]:not(.admin-luxe-btn-primary):not(.admin-btn-primary):not([class*="bg-primary"]),
+  .admin-luxe-root button[type="button"]:not(.admin-luxe-btn-primary):not(.admin-btn-primary):not(.admin-luxe-btn-secondary):not([class*="bg-primary"]),
   .admin-luxe-root .border.border-outline-variant {
     border-color: #c3c4c7;
   }

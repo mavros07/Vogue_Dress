@@ -1,40 +1,28 @@
 <x-app-layout>
-  <div class="flex flex-col">
-    <x-admin.page-header :title="__('Page editors')" :subtitle="__('Edit public pages one by one.')" />
+  <x-admin.page-header :title="__('Pages')" :subtitle="__('Edit the public pages.')" />
 
-    <x-admin.page-content>
-      <x-admin.card variant="default">
-        <p class="text-sm text-gray-600 mb-6">
-          Edit the public pages one by one. This mirrors the page-editor pattern from your reference platform.
-        </p>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          @foreach ($pages as $slug => $info)
-            @php
-              $entry = $existing[$slug] ?? null;
-              $isSaved = $entry !== null;
-              $isActive = $entry?->is_active ?? true;
-            @endphp
-            <a href="{{ route('admin.pages.edit', ['slug' => $slug]) }}" class="block border rounded-lg p-4 hover:shadow transition">
-              <div class="flex items-center justify-between gap-2">
-                <h3 class="font-semibold text-gray-900">{{ $info['label'] }}</h3>
-                <div class="flex items-center gap-2">
-                  <span class="text-xs px-2 py-1 rounded {{ $isSaved ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' }}">
-                    {{ $isSaved ? 'Saved' : 'Default' }}
-                  </span>
-                  <span class="text-xs px-2 py-1 rounded {{ $isActive ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700' }}">
-                    {{ $isActive ? 'Active' : 'Inactive' }}
-                  </span>
-                </div>
-              </div>
-              <p class="mt-2 text-sm text-gray-600">{{ $info['default_description'] }}</p>
-              <p class="mt-3 text-indigo-600 text-sm font-medium">Open editor →</p>
-            </a>
-          @endforeach
-        </div>
-      </x-admin.card>
-    </x-admin.page-content>
+  <div class="px-4 py-4 md:px-6 md:py-5">
+    <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+      @foreach ($pages as $slug => $info)
+        @php
+          $entry = $existing[$slug] ?? null;
+          $isSaved = $entry !== null;
+          $isActive = $entry?->is_active ?? true;
+        @endphp
+        <a href="{{ route('admin.pages.edit', ['slug' => $slug]) }}" class="flex min-h-[9.5rem] flex-col gap-3 rounded border border-wp-border bg-white p-4 transition-colors hover:border-wp-link">
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="text-sm font-semibold text-wp-text">{{ $info['label'] }}</h3>
+            <span class="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium {{ $isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}">
+              {{ $isActive ? __('Active') : __('Inactive') }}
+            </span>
+          </div>
+          <p class="flex-1 text-sm leading-5 text-wp-text-muted">{{ $info['default_description'] }}</p>
+          <div class="flex items-center justify-between gap-3 border-t border-wp-border pt-3">
+            <span class="text-xs text-wp-text-muted">{{ $isSaved ? __('Saved') : __('Using defaults') }}</span>
+            <span class="text-xs font-medium text-wp-link">{{ __('Edit') }}</span>
+          </div>
+        </a>
+      @endforeach
+    </div>
   </div>
-  @include('admin.partials.luxe-footer', ['footerClass' => 'mt-8'])
 </x-app-layout>
-
