@@ -183,10 +183,17 @@
         ->filter(fn ($r) => (bool) ($r->is_active ?? true))
         ->values()
         ->take(8);
+      $categoryCount = $categoryCards->count();
+      $categoryGridClass = match (true) {
+          $categoryCount <= 1 => 'grid-cols-1',
+          $categoryCount === 2 => 'grid-cols-1 sm:grid-cols-2',
+          $categoryCount === 3 => 'grid-cols-1 sm:grid-cols-3',
+          default => 'grid-cols-2 md:grid-cols-4',
+      };
     @endphp
     <section class="py-section-py-mobile md:py-section-py-desktop max-w-max-container mx-auto px-margin-mobile md:px-gutter">
       <h2 class="font-headline-md text-headline-md text-center mb-8 md:mb-10 uppercase">{{ $shopCategoriesTitle }}</h2>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+      <div class="grid {{ $categoryGridClass }} gap-4 md:gap-6">
         @forelse ($categoryCards as $cat)
           @php
             $img = \App\Support\VehicleImageUrl::url($cat->logo_path ?? null);

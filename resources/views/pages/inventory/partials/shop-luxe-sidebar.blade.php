@@ -8,9 +8,13 @@
   $activeColor = (int) ($filters['color_id'] ?? 0);
   $priceMinVal = (int) ($filters['price_min'] ?? 0);
   $priceMaxVal = (int) ($filters['price_max'] ?? 0);
-  $sliderMax = max($priceMaxVal, 5000);
-  $sliderMin = min($priceMinVal > 0 ? $priceMinVal : 100, $sliderMax - 1);
-  $sliderValue = $priceMaxVal > 0 ? min($priceMaxVal, $sliderMax) : (int) round(($sliderMin + $sliderMax) / 2);
+  $catalogMin = max(0, (int) ($priceBounds['min'] ?? 1000));
+  $catalogMax = max($catalogMin + 1, (int) ($priceBounds['max'] ?? 100000));
+  $sliderMax = max($priceMaxVal, $catalogMax);
+  $sliderMin = min($catalogMin, $sliderMax - 1);
+  $sliderValue = $priceMaxVal > 0 ? min($priceMaxVal, $sliderMax) : $sliderMax;
+  $shownMin = $priceMinVal > 0 ? $priceMinVal : $sliderMin;
+  $shownMax = $priceMaxVal > 0 ? min($priceMaxVal, $sliderMax) : $sliderMax;
 @endphp
 
 <form id="{{ $formId }}" method="get" action="{{ route('shop.index') }}" class="shop-luxe-filter-form space-y-12">
@@ -80,15 +84,15 @@
       <input
         type="range"
         class="shop-luxe-range w-full h-px bg-outline-variant appearance-none accent-primary cursor-pointer"
-        min="0"
+        min="{{ $sliderMin }}"
         max="{{ $sliderMax }}"
         value="{{ $sliderValue }}"
         data-price-range-slider
         aria-label="{{ __('Price range') }}"
       />
       <div class="flex justify-between font-body-md text-body-md text-on-surface-variant">
-        <span data-price-min-label>{{ $priceMinVal > 0 ? format_currency($priceMinVal) : __('$100') }}</span>
-        <span data-price-max-label>{{ $priceMaxVal > 0 ? format_currency($priceMaxVal) : __('$5,000+') }}</span>
+        <span data-price-min-label>{{ format_currency($shownMin) }}</span>
+        <span data-price-max-label>{{ format_currency($shownMax) }}</span>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <input name="price_min" type="number" value="{{ $filters['price_min'] ?? '' }}" placeholder="{{ __('Min') }}" class="shop-luxe-field w-full border-b border-outline-variant bg-transparent py-2 font-label-caps text-[11px] focus:border-primary focus:outline-none" data-price-min-input />

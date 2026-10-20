@@ -56,6 +56,7 @@
           'formId' => 'inventory-filter-form',
           'filters' => $filters,
           'filterOptions' => $filterOptions,
+          'priceBounds' => $priceBounds ?? ['min' => 1000, 'max' => 100000],
         ])
       </aside>
 
@@ -120,6 +121,7 @@
           'formId' => 'inventory-filter-form-mobile',
           'filters' => $filters,
           'filterOptions' => $filterOptions,
+          'priceBounds' => $priceBounds ?? ['min' => 1000, 'max' => 100000],
         ])
       </div>
     </div>
@@ -169,7 +171,10 @@
         slider.addEventListener('input', () => {
           const v = parseInt(slider.value, 10) || 0;
           if (maxInput) maxInput.value = String(v);
-          if (maxLabel) maxLabel.textContent = v >= parseInt(slider.max, 10) ? '{{ __('$5,000+') }}' : String(v);
+          if (maxLabel) {
+            const formatted = '₦' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            maxLabel.textContent = formatted;
+          }
         });
       });
 

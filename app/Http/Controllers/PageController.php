@@ -471,6 +471,7 @@ class PageController extends Controller
                 'vehicles' => $vehicles,
                 'filters' => $mergedFilters,
                 'filterOptions' => $filterOpts,
+                'priceBounds' => $this->shopPriceBounds(),
                 'page' => $page,
                 'sections' => $sections,
                 'shopHeading' => $this->resolveShopHeading($sections['heading'] ?? '', $mergedFilters, $filterOpts),
@@ -491,6 +492,7 @@ class PageController extends Controller
                 'vehicles' => Vehicle::query()->whereRaw('1=0')->paginate(30),
                 'filters' => $fallbackFilters,
                 'filterOptions' => $emptyFilterOpts,
+                'priceBounds' => ['min' => 1000, 'max' => 100000],
                 'page' => null,
                 'sections' => $fallbackSections,
                 'shopHeading' => $this->resolveShopHeading($fallbackSections['heading'] ?? '', $fallbackFilters, $emptyFilterOpts),
@@ -524,6 +526,31 @@ class PageController extends Controller
     protected function approvedVehicleFilterOptions(): array
     {
         return VehicleListingCatalog::filterOptions();
+    }
+
+    /**
+     * Slider scale for the shop sidebar, in the store currency (naira).
+     *
+     * @return array{min: int, max: int}
+     */
+    protected function shopPriceBounds(): array
+    {
+        $row = Vehicle::query()
+            ->where('status', 'approved')
+            ->where('price', '>', 0)
+            ->selectRaw('MIN(price) as min_price, MAX(price) as max_price')
+            ->first();
+
+        $min = (int) ($row->min_price ?? 0);
+        $max = (int) ($row->max_price ?? 0);
+        if ($max <= 0) {
+            return ['min' => 1000, 'max' => 100000];
+        }
+        if ($min <= 0 || $min >= $max) {
+            $min = 0;
+        }
+
+        return ['min' => $min, 'max' => $max];
     }
 
     public function vehicleShow(Request $request, string $slug = '')
