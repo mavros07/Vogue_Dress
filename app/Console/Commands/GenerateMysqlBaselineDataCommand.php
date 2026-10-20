@@ -9,7 +9,8 @@ use Illuminate\Support\Carbon;
 
 /**
  * Regenerates the baseline DATA section in database/myauto_torque_db.sql
- * (everything after BASELINE_MARKER) from seed-data/*.html.
+ * (everything after BASELINE_MARKER). CMS body HTML is left empty because
+ * the storefront reads page sections, not the legacy HTML dumps.
  *
  * Important: the marker must not appear anywhere else in the file (e.g. header
  * comments), or regeneration will truncate the schema.
@@ -20,30 +21,26 @@ class GenerateMysqlBaselineDataCommand extends Command
 
     protected $signature = 'db:generate-mysql-baseline-data';
 
-    protected $description = 'Rewrite baseline INSERTs in myauto_torque_db.sql from database/seed-data/';
+    protected $description = 'Rewrite baseline INSERTs in myauto_torque_db.sql';
 
     public function handle(): int
     {
         $definitions = [
             'home' => [
                 'title' => 'Home',
-                'meta_description' => 'Browse premium vehicles and find your next car.',
-                'file' => 'cms-home-body.html',
+                'meta_description' => 'Homepage SEO and section copy for the Vogue Atelier storefront.',
             ],
             'about' => [
                 'title' => 'About Us',
-                'meta_description' => 'Learn about our dealership and team.',
-                'file' => 'cms-about-body.html',
+                'meta_description' => 'Our story, values, and the artisans behind every piece.',
             ],
             'faq' => [
                 'title' => 'FAQ',
-                'meta_description' => 'Frequently asked questions about buying and selling vehicles.',
-                'file' => 'cms-faq-body.html',
+                'meta_description' => 'FAQ page copy and SEO metadata.',
             ],
             'contact' => [
                 'title' => 'Contact Us',
-                'meta_description' => 'Get in touch with our sales and service team.',
-                'file' => 'cms-contact-intro-body.html',
+                'meta_description' => 'Reach our concierge team for styling consultations and order inquiries.',
             ],
         ];
 
@@ -53,8 +50,8 @@ class GenerateMysqlBaselineDataCommand extends Command
             'dealer_hours_label' => 'Work Hours',
             'dealer_sales_phone' => '(888) 354-1781',
             'dealer_sales_hours' => "Mon – Fri: 09:00AM – 09:00PM\nSaturday: 09:00AM – 07:00PM\nSunday: Closed",
-            'footer_about' => 'Fusce interdum ipsum egestas urna amet fringilla, et placerat ex venenatis. Aliquet luctus pharetra. Proin sed fringilla lectus… ar sit amet tellus in mollis. Proin nec egestas nibh, eget egestas urna. Phasellus sit amet vehicula nunc. In hac habitasse platea dictumst.',
-            'copyright_line' => 'MyAutoTorque',
+            'footer_about' => 'Vogue Dress For Less is a clothing line for dresses, African attire, luxury fabrics, and ready-to-wear. Each piece is chosen for quality, fit, and everyday style.',
+            'copyright_line' => 'Vogue Dress For Less',
             'social_facebook' => 'https://www.facebook.com/',
             'social_instagram' => 'https://www.instagram.com/',
             'social_linkedin' => 'https://www.linkedin.com/',
@@ -84,7 +81,7 @@ class GenerateMysqlBaselineDataCommand extends Command
         $passwordSql = $this->sqlString($passwordHash);
         $rememberToken = $this->sqlString(Str::random(10));
 
-        $lines[] = '-- Demo accounts used by seeded vehicles and admin flows';
+        $lines[] = '-- Demo accounts used by admin flows';
         $lines[] = "INSERT INTO `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES";
         $lines[] = '  ('.$this->sqlString($demoUsers['admin']['name']).', '.$this->sqlString($demoUsers['admin']['email']).", '{$now}', {$passwordSql}, {$rememberToken}, '{$now}', '{$now}'),";
         $lines[] = '  ('.$this->sqlString($demoUsers['user']['name']).', '.$this->sqlString($demoUsers['user']['email']).", '{$now}', {$passwordSql}, {$rememberToken}, '{$now}', '{$now}')";
@@ -108,10 +105,9 @@ class GenerateMysqlBaselineDataCommand extends Command
         $lines[] = implode(",\n", $rows).';';
         $lines[] = '';
 
-        $lines[] = '-- CMS pages (public routes: /, /about, /faq, /contact)';
+        $lines[] = '-- CMS pages (public routes: /, /about, /faq, /contact). Body HTML stays empty; the storefront reads section fields.';
         foreach ($definitions as $slug => $def) {
-            $path = database_path('seed-data/'.$def['file']);
-            $html = is_file($path) ? (string) file_get_contents($path) : '';
+            $html = '';
             $lines[] = 'INSERT INTO `cms_pages` (`slug`, `title`, `meta_description`, `content_html`, `created_at`, `updated_at`) VALUES (';
             $lines[] = '  '.$this->sqlString($slug).', '.$this->sqlString($def['title']).', '.$this->sqlString($def['meta_description']).', ';
             $lines[] = '  '.$this->sqlString($html).", '{$now}', '{$now}'";
@@ -119,8 +115,7 @@ class GenerateMysqlBaselineDataCommand extends Command
             $lines[] = '';
         }
 
-        $lines[] = '-- Demo inventory uses listing_option foreign keys; seed with Laravel after import:';
-        $lines[] = '--   php artisan db:seed --class=VehiclesSeeder';
+        $lines[] = '-- Catalog rows use listing_option foreign keys; seed with Laravel after import.';
         $lines[] = '';
 
         $lines[] = 'SET FOREIGN_KEY_CHECKS = 1;';

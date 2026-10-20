@@ -18,7 +18,7 @@ final class SiteSettingDefaults
         $hours = "Monday - Friday: 09:00AM - 09:00PM\nSaturday: 09:00AM - 07:00PM\nSunday: Closed";
 
         return [
-            'site_display_name' => 'Vogue Dress 4Less',
+            'site_display_name' => 'Vogue Dress For Less',
             'logo_path' => '',
             'logo_light_path' => '',
             'favicon_path' => '',
@@ -34,8 +34,8 @@ final class SiteSettingDefaults
             'social_instagram' => '',
             'social_linkedin' => '',
             'social_youtube' => '',
-            'copyright_line' => '',
-            'footer_tagline' => 'Premium automotive retail experience. Redefining the way you browse and buy luxury vehicles with curated inventory and bespoke service.',
+            'copyright_line' => 'Vogue Dress For Less',
+            'footer_tagline' => 'A clothing store for dresses, ready-to-wear, and fabrics. Shop the collection at Vogue Dress For Less.',
             'footer_blog_title' => 'Latest Blog Posts',
             'footer_blog_entries_json' => '[]',
             'newsletter_enabled' => '0',

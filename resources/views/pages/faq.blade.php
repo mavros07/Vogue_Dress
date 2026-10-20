@@ -40,7 +40,7 @@
                 {{ $sections['heading'] ?? 'HELP CENTER' }}
             </h1>
             <p class="font-body text-slate-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-                {{ $sections['intro'] ?? 'Everything you need to know about the Apex Automotive experience.' }}
+                {{ $sections['intro'] ?? 'Everything you need to know about the Vogue Atelier experience — sizing, shipping, styling, and aftercare.' }}
             </p>
         </div>
     </section>
@@ -128,7 +128,7 @@
                     {{ $sections['cta_title'] ?? 'STILL SEEKING ANSWERS?' }}
                 </h2>
                 <p class="font-body text-slate-600 text-lg max-w-md">
-                    {{ $sections['cta_body'] ?? 'Our automotive concierges are available 7 days a week to assist with technical specifications or test drives.' }}
+                    {{ $sections['cta_body'] ?? 'Our concierge team is available seven days a week to help with sizing, styling, or order enquiries.' }}
                 </p>
                 <div class="flex flex-wrap gap-4">
                     <a href="/contact" class="bg-primary text-slate-900 px-8 py-4 rounded-lg font-headline font-bold text-sm uppercase tracking-widest hover:bg-primary/90 transition-all flex items-center gap-2">

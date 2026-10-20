@@ -207,12 +207,12 @@ if ($catalogMediaMissing !== []) {
 $seederPath = $root.'/database/seeders/CatalogProductsSeeder.php';
 $seederSrc = file_get_contents($seederPath);
 $seederChecks = [
-    'updateOrCreate' => str_contains($seederSrc, 'updateOrCreate'),
+    'import_key lookup' => str_contains($seederSrc, "where('import_key'"),
     'approved status' => str_contains($seederSrc, "'status' => 'approved'"),
-    'copyProductImage' => str_contains($seederSrc, 'copyProductImage'),
-    'ensureAfricanAttiresCategory' => str_contains($seederSrc, 'ensureAfricanAttiresCategory'),
-    'vehicle_images replace' => str_contains($seederSrc, "VehicleImage::query()->where('vehicle_id'"),
-    'catalog-products.php load' => str_contains($seederSrc, 'catalog-products.php'),
+    'copy only when missing' => str_contains($seederSrc, 'copyIfMissing'),
+    'category ensure' => str_contains($seederSrc, 'ensureCategories'),
+    'does not wipe gallery' => ! str_contains($seederSrc, '->delete()'),
+    'scans product folders' => str_contains($seederSrc, 'asset/images/products'),
     'default price 45000' => str_contains($seederSrc, '45000'),
 ];
 foreach ($seederChecks as $label => $ok) {

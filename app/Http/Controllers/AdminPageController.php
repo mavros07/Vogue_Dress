@@ -12,6 +12,16 @@ use Illuminate\View\View;
 class AdminPageController extends Controller
 {
     /**
+     * Clothing-store page defaults used by the page editor and the storefront copy migration.
+     *
+     * @return array<string, array{label: string, default_title: string, default_description: string, fields: array<int, array{name: string, label: string, type: string, default: string, group?: string}>}>
+     */
+    public function clothingPageDefinitions(): array
+    {
+        return $this->editablePages();
+    }
+
+    /**
      * @return array<string, array{label: string, default_title: string, default_description: string, fields: array<int, array{name: string, label: string, type: string, default: string, group?: string}>}>
      */
     protected function editablePages(): array
@@ -89,25 +99,25 @@ class AdminPageController extends Controller
                     ['name' => 'philosophy_kicker', 'label' => 'Philosophy kicker', 'type' => 'text', 'default' => 'Our Philosophy', 'group' => 'Our story'],
                     ['name' => 'philosophy_title', 'label' => 'Philosophy title', 'type' => 'text', 'default' => 'Modern Heritage', 'group' => 'Our story'],
                     ['name' => 'philosophy_quote', 'label' => 'Philosophy quote', 'type' => 'textarea', 'default' => '"Luxury is not found in excess, but in the silence of perfect craftsmanship and the weight of history held in a single thread."', 'group' => 'Our story'],
-                    ['name' => 'story_paragraph_1', 'label' => 'Story paragraph 1', 'type' => 'textarea', 'default' => 'Born in the vibrant heart of Lagos and refined through a global lens, our atelier represents the convergence of ancient West African textile traditions and contemporary minimalist design.', 'group' => 'Our story'],
-                    ['name' => 'story_paragraph_2', 'label' => 'Story paragraph 2', 'type' => 'textarea', 'default' => 'Each collection is a curated exploration of form, texture, and cultural narrative. Our silhouette is modern, but its soul is ancestral.', 'group' => 'Our story'],
+                    ['name' => 'story_paragraph_1', 'label' => 'Story paragraph 1', 'type' => 'textarea', 'default' => 'Born in the vibrant heart of Lagos and refined through a global lens, our atelier represents the convergence of ancient West African textile traditions and contemporary minimalist design. We believe that true luxury is a dialogue between the past and the present.', 'group' => 'Our story'],
+                    ['name' => 'story_paragraph_2', 'label' => 'Story paragraph 2', 'type' => 'textarea', 'default' => 'Each collection is a curated exploration of form, texture, and cultural narrative. By stripping away the superfluous, we allow the intrinsic beauty of hand-finished fabrics to speak. Our silhouette is modern, but its soul is ancestral.', 'group' => 'Our story'],
                     ['name' => 'story_cta_text', 'label' => 'Story CTA text', 'type' => 'text', 'default' => 'View the Collection', 'group' => 'Our story'],
                     ['name' => 'story_cta_href', 'label' => 'Story CTA link', 'type' => 'text', 'default' => '/shop', 'group' => 'Our story'],
 
                     ['name' => 'artisan_kicker', 'label' => 'Artisan kicker', 'type' => 'text', 'default' => 'The Master Weaver', 'group' => 'Artisan'],
                     ['name' => 'artisan_title', 'label' => 'Artisan title', 'type' => 'text', 'default' => 'Meticulous Craft', 'group' => 'Artisan'],
-                    ['name' => 'artisan_body', 'label' => 'Artisan body', 'type' => 'textarea', 'default' => 'Meet the artisans who shape every piece in our studio.', 'group' => 'Artisan'],
+                    ['name' => 'artisan_body', 'label' => 'Artisan body', 'type' => 'textarea', 'default' => 'Meet the artisans who shape every piece in our studio. With decades of experience, their hands navigate each stitch with an intuitive grace that machines can never replicate. Every garment carries the rhythm of their work — a tangible connection to heritage artistry.', 'group' => 'Artisan'],
                     ['name' => 'artisan_image', 'label' => 'Artisan image', 'type' => 'image', 'default' => 'asset/images/media/about-values-1.jpg', 'group' => 'Artisan', 'preview' => 'thumbnail'],
                     ['name' => 'artisan_location_label', 'label' => 'Artisan location label', 'type' => 'text', 'default' => 'Location: Lagos Studio', 'group' => 'Artisan'],
                     ['name' => 'artisan_location_detail', 'label' => 'Artisan location detail', 'type' => 'text', 'default' => 'Lagos, Nigeria', 'group' => 'Artisan'],
 
                     ['name' => 'values_title', 'label' => 'Core values heading', 'type' => 'text', 'default' => 'Core Values', 'group' => 'Core values'],
                     ['name' => 'val_1_title', 'label' => 'Value 1 title', 'type' => 'text', 'default' => 'Craftsmanship', 'group' => 'Core values'],
-                    ['name' => 'val_1_body', 'label' => 'Value 1 body', 'type' => 'textarea', 'default' => 'Slow fashion at its pinnacle. We prioritize quality over speed.', 'group' => 'Core values'],
+                    ['name' => 'val_1_body', 'label' => 'Value 1 body', 'type' => 'textarea', 'default' => 'Slow fashion at its pinnacle. We prioritize quality over speed, ensuring every seam is a testament to artisanal skill.', 'group' => 'Core values'],
                     ['name' => 'val_2_title', 'label' => 'Value 2 title', 'type' => 'text', 'default' => 'Sustainability', 'group' => 'Core values'],
-                    ['name' => 'val_2_body', 'label' => 'Value 2 body', 'type' => 'textarea', 'default' => 'Ethical sourcing and fair-wage partnerships that empower local communities.', 'group' => 'Core values'],
+                    ['name' => 'val_2_body', 'label' => 'Value 2 body', 'type' => 'textarea', 'default' => 'Ethical sourcing of materials and fair-wage partnerships that empower local communities and protect the earth.', 'group' => 'Core values'],
                     ['name' => 'val_3_title', 'label' => 'Value 3 title', 'type' => 'text', 'default' => 'Heritage', 'group' => 'Core values'],
-                    ['name' => 'val_3_body', 'label' => 'Value 3 body', 'type' => 'textarea', 'default' => 'Preserving and evolving cultural narratives through modern design.', 'group' => 'Core values'],
+                    ['name' => 'val_3_body', 'label' => 'Value 3 body', 'type' => 'textarea', 'default' => 'A commitment to preserving and evolving cultural narratives through modern design and visual storytelling.', 'group' => 'Core values'],
 
                     ['name' => 'newsletter_title', 'label' => 'Newsletter title', 'type' => 'text', 'default' => 'Join the Circle', 'group' => 'Newsletter'],
                     ['name' => 'newsletter_body', 'label' => 'Newsletter body', 'type' => 'textarea', 'default' => 'Receive early access to limited drops and stories from the studio.', 'group' => 'Newsletter'],
@@ -120,39 +130,39 @@ class AdminPageController extends Controller
                 'fields' => [
                     ['name' => 'kicker', 'label' => 'Header Kicker', 'type' => 'text', 'default' => 'Need Help?', 'group' => 'Page hero'],
                     ['name' => 'heading', 'label' => 'Header Title', 'type' => 'text', 'default' => 'HELP CENTER', 'group' => 'Page hero'],
-                    ['name' => 'intro', 'label' => 'Header Intro', 'type' => 'textarea', 'default' => 'Everything you need to know about the Vogue Atelier experience — sizing, shipping, styling, and aftercare.', 'group' => 'Page hero'],
+                    ['name' => 'intro', 'label' => 'Header Intro', 'type' => 'textarea', 'default' => 'Everything you need to know about ordering, shipping, and returns.', 'group' => 'Page hero'],
                     ['name' => 'hero_image', 'label' => 'Hero Background Image', 'type' => 'image', 'default' => 'asset/images/media/faq-hero-bg.jpg', 'group' => 'Media', 'preview' => 'thumbnail'],
 
-                    ['name' => 'cat_1_title', 'label' => 'Category 1 Title', 'type' => 'text', 'default' => 'Orders & Shipping', 'group' => 'Category 1: Orders'],
-                    ['name' => 'cat_1_icon', 'label' => 'Category 1 Icon', 'type' => 'text', 'default' => 'shopping_bag', 'group' => 'Category 1: Orders'],
-                    ['name' => 'cat_1_faqs', 'label' => 'Category 1 FAQs', 'type' => 'repeater', 'default' => '[]', 'group' => 'Category 1: Orders', 'schema' => [
+                    ['name' => 'cat_1_title', 'label' => 'Category 1 Title', 'type' => 'text', 'default' => 'Ordering', 'group' => 'Category 1: Ordering'],
+                    ['name' => 'cat_1_icon', 'label' => 'Category 1 Icon', 'type' => 'text', 'default' => 'shopping_bag', 'group' => 'Category 1: Ordering'],
+                    ['name' => 'cat_1_faqs', 'label' => 'Category 1 FAQs', 'type' => 'repeater', 'default' => '[{"q":"How long does processing take?","a":"Orders are processed within 1-2 business days. You will receive a tracking number once your order ships."},{"q":"Can I modify or cancel my order?","a":"Contact us within 24 hours of placing the order and we will do our best to accommodate changes."},{"q":"Do you ship internationally?","a":"Yes — international shipping is available at checkout for most regions."}]', 'group' => 'Category 1: Ordering', 'schema' => [
                         ['name' => 'q', 'label' => 'Question', 'type' => 'text'],
                         ['name' => 'a', 'label' => 'Answer', 'type' => 'textarea'],
                     ]],
 
-                    ['name' => 'cat_2_title', 'label' => 'Category 2 Title', 'type' => 'text', 'default' => 'Sizing & Fit', 'group' => 'Category 2: Sizing'],
-                    ['name' => 'cat_2_icon', 'label' => 'Category 2 Icon', 'type' => 'text', 'default' => 'straighten', 'group' => 'Category 2: Sizing'],
-                    ['name' => 'cat_2_faqs', 'label' => 'Category 2 FAQs', 'type' => 'repeater', 'default' => '[]', 'group' => 'Category 2: Sizing', 'schema' => [
+                    ['name' => 'cat_2_title', 'label' => 'Category 2 Title', 'type' => 'text', 'default' => 'Returns & Exchanges', 'group' => 'Category 2: Returns'],
+                    ['name' => 'cat_2_icon', 'label' => 'Category 2 Icon', 'type' => 'text', 'default' => 'autorenew', 'group' => 'Category 2: Returns'],
+                    ['name' => 'cat_2_faqs', 'label' => 'Category 2 FAQs', 'type' => 'repeater', 'default' => '[{"q":"What is your return policy?","a":"Returns are accepted within 30 days of delivery for unworn items in original condition."},{"q":"How do I exchange a size?","a":"Request an exchange via the returns portal — we will ship the new size as soon as we receive the original."}]', 'group' => 'Category 2: Returns', 'schema' => [
                         ['name' => 'q', 'label' => 'Question', 'type' => 'text'],
                         ['name' => 'a', 'label' => 'Answer', 'type' => 'textarea'],
                     ]],
 
-                    ['name' => 'cat_3_title', 'label' => 'Category 3 Title', 'type' => 'text', 'default' => 'Returns & Aftercare', 'group' => 'Category 3: Returns'],
-                    ['name' => 'cat_3_icon', 'label' => 'Category 3 Icon', 'type' => 'text', 'default' => 'autorenew', 'group' => 'Category 3: Returns'],
-                    ['name' => 'cat_3_faqs', 'label' => 'Category 3 FAQs', 'type' => 'repeater', 'default' => '[]', 'group' => 'Category 3: Returns', 'schema' => [
+                    ['name' => 'cat_3_title', 'label' => 'Category 3 Title', 'type' => 'text', 'default' => 'Fit & Sizing', 'group' => 'Category 3: Sizing'],
+                    ['name' => 'cat_3_icon', 'label' => 'Category 3 Icon', 'type' => 'text', 'default' => 'straighten', 'group' => 'Category 3: Sizing'],
+                    ['name' => 'cat_3_faqs', 'label' => 'Category 3 FAQs', 'type' => 'repeater', 'default' => '[{"q":"Where can I find size guides?","a":"Each product page includes a size guide tab with measurements."}]', 'group' => 'Category 3: Sizing', 'schema' => [
                         ['name' => 'q', 'label' => 'Question', 'type' => 'text'],
                         ['name' => 'a', 'label' => 'Answer', 'type' => 'textarea'],
                     ]],
 
-                    ['name' => 'cat_4_title', 'label' => 'Category 4 Title', 'type' => 'text', 'default' => 'Personal Styling', 'group' => 'Category 4: Styling'],
-                    ['name' => 'cat_4_icon', 'label' => 'Category 4 Icon', 'type' => 'text', 'default' => 'auto_awesome', 'group' => 'Category 4: Styling'],
-                    ['name' => 'cat_4_faqs', 'label' => 'Category 4 FAQs', 'type' => 'repeater', 'default' => '[]', 'group' => 'Category 4: Styling', 'schema' => [
+                    ['name' => 'cat_4_title', 'label' => 'Category 4 Title', 'type' => 'text', 'default' => 'Care', 'group' => 'Category 4: Care'],
+                    ['name' => 'cat_4_icon', 'label' => 'Category 4 Icon', 'type' => 'text', 'default' => 'water_drop', 'group' => 'Category 4: Care'],
+                    ['name' => 'cat_4_faqs', 'label' => 'Category 4 FAQs', 'type' => 'repeater', 'default' => '[{"q":"How should I care for my pieces?","a":"Care instructions are printed on each garment and noted on its product page."}]', 'group' => 'Category 4: Care', 'schema' => [
                         ['name' => 'q', 'label' => 'Question', 'type' => 'text'],
                         ['name' => 'a', 'label' => 'Answer', 'type' => 'textarea'],
                     ]],
 
                     ['name' => 'cta_title', 'label' => 'CTA Title', 'type' => 'text', 'default' => 'STILL HAVE QUESTIONS?', 'group' => 'CTA Section'],
-                    ['name' => 'cta_body', 'label' => 'CTA Body', 'type' => 'textarea', 'default' => 'Our concierge team is available seven days a week to help with sizing, styling, or order enquiries.', 'group' => 'CTA Section'],
+                    ['name' => 'cta_body', 'label' => 'CTA Body', 'type' => 'textarea', 'default' => 'Our customer care team is available Monday through Saturday.', 'group' => 'CTA Section'],
                     ['name' => 'cta_image', 'label' => 'CTA Side Image', 'type' => 'image', 'default' => 'asset/images/media/faq-cta.jpg', 'group' => 'CTA Section', 'preview' => 'thumbnail'],
                 ],
             ],

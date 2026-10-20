@@ -37,6 +37,7 @@ class Vehicle extends Model
         'approved_by',
         'rejection_reason',
         'product_category_listing_option_id',
+        'import_key',
     ];
 
     protected function casts(): array

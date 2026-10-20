@@ -37,6 +37,7 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->call(VehiclesSeeder::class);
+        $this->call(CatalogProductsSeeder::class);
         $this->call(SiteSettingsSeeder::class);
         $this->call(CmsPagesSeeder::class);
         $this->call(PageSectionsSeeder::class);

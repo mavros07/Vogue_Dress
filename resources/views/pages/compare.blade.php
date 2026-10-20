@@ -4,7 +4,7 @@
   <section class="bg-black text-white py-16">
     <div class="max-w-7xl mx-auto px-6 flex items-center justify-between gap-4 flex-wrap">
       <div>
-        <h1 class="font-headline text-4xl font-black uppercase">{{ $sections['heading'] ?? ($page?->title ?? 'Compare Vehicles') }}</h1>
+        <h1 class="font-headline text-4xl font-black uppercase">{{ $sections['heading'] ?? ($page?->title ?? 'Compare Products') }}</h1>
         @if (!empty($sections['intro']) || !empty($page?->meta_description))
           <p class="mt-3 text-sm text-slate-300 max-w-2xl">{{ $sections['intro'] ?? $page?->meta_description }}</p>
         @endif

@@ -74,6 +74,10 @@ return new class extends Migration
             $this->dropIndexIfExists($indexName);
         }
 
+        if (Schema::hasColumn('vehicles', 'type_listing_option_id')) {
+            $this->dropTypeListingOptionColumn();
+        }
+
         $existingColumns = array_values(array_filter(
             self::COLUMNS_TO_DROP,
             fn (string $column) => Schema::hasColumn('vehicles', $column)
@@ -82,13 +86,6 @@ return new class extends Migration
         if ($existingColumns !== []) {
             Schema::table('vehicles', function (Blueprint $table) use ($existingColumns) {
                 $table->dropColumn($existingColumns);
-            });
-        }
-
-        if (Schema::hasColumn('vehicles', 'type_listing_option_id')) {
-            $this->dropForeignIfExists('vehicles', 'type_listing_option_id');
-            Schema::table('vehicles', function (Blueprint $table) {
-                $table->dropColumn('type_listing_option_id');
             });
         }
     }
@@ -134,6 +131,64 @@ return new class extends Migration
             'vehicles_drive_listing_option_id_index',
             'vehicles_country_listing_option_id_index',
         ];
+    }
+
+    private function dropTypeListingOptionColumn(): void
+    {
+        if (DB::getDriverName() === 'sqlite') {
+            $this->rebuildSqliteTableWithoutColumn('vehicles', 'type_listing_option_id');
+
+            return;
+        }
+
+        $this->dropForeignIfExists('vehicles', 'type_listing_option_id');
+        Schema::table('vehicles', function (Blueprint $table) {
+            $table->dropColumn('type_listing_option_id');
+        });
+    }
+
+    /**
+     * SQLite rewrites the table when a column is dropped. After an earlier rewrite
+     * the foreign key can remain in the CREATE statement while Laravel no longer
+     * lists it, and the next drop then fails. Rebuild the table without that column.
+     */
+    private function rebuildSqliteTableWithoutColumn(string $table, string $column): void
+    {
+        $create = DB::selectOne("select sql as sql from sqlite_master where type = 'table' and name = ?", [$table]);
+        $sql = (string) ($create->sql ?? '');
+        $quoted = preg_quote($column, '/');
+        $sql = preg_replace('/,\s*"'.$quoted.'"\s+integer(?:\s+null)?/i', '', $sql) ?? $sql;
+        $sql = preg_replace('/,\s*foreign key\("'.$quoted.'"\)\s+references\s+"?listing_options"?\("id"\)[^,)]*/i', '', $sql) ?? $sql;
+
+        if (preg_match('/"'.preg_quote($column, '/').'"/', $sql) === 1) {
+            throw new \RuntimeException('Could not remove '.$column.' from the '.$table.' table.');
+        }
+
+        $rebuilt = $table.'__rebuilt';
+        $sql = preg_replace('/CREATE TABLE "'.$table.'"/', 'CREATE TABLE "'.$rebuilt.'"', $sql, 1) ?? $sql;
+
+        $indexes = DB::select("select sql as sql from sqlite_master where type = 'index' and tbl_name = ? and sql is not null", [$table]);
+        $columns = collect(DB::select('pragma table_info('.$table.')'))
+            ->pluck('name')
+            ->reject(fn ($name) => $name === $column)
+            ->map(fn ($name) => '"'.$name.'"')
+            ->implode(', ');
+
+        Schema::disableForeignKeyConstraints();
+        DB::statement($sql);
+        DB::statement('INSERT INTO "'.$rebuilt.'" ('.$columns.') SELECT '.$columns.' FROM "'.$table.'"');
+        DB::statement('DROP TABLE "'.$table.'"');
+        DB::statement('ALTER TABLE "'.$rebuilt.'" RENAME TO "'.$table.'"');
+
+        foreach ($indexes as $index) {
+            $indexSql = (string) ($index->sql ?? '');
+            if ($indexSql === '' || str_contains($indexSql, $column)) {
+                continue;
+            }
+            DB::statement($indexSql);
+        }
+
+        Schema::enableForeignKeyConstraints();
     }
 
     private function dropForeignIfExists(string $table, string $column): void

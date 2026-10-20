@@ -4,7 +4,7 @@ namespace App\Support;
 
 final class SiteBrand
 {
-    public const DEFAULT_NAME = 'Vogue Dress 4Less';
+    public const DEFAULT_NAME = 'Vogue Dress For Less';
 
     public static function displayName(?array $site = null): string
     {
@@ -26,6 +26,6 @@ final class SiteBrand
 
     private static function isLegacyAutoTorqueName(string $name): bool
     {
-        return str_contains(strtolower($name), 'auto torque');
+        return (bool) preg_match('/auto\s*torque/i', $name);
     }
 }
